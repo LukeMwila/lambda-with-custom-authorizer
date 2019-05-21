@@ -42,9 +42,10 @@ export const authorizeUser: Handler = (
     const decodedToken: any = jwtDecode(token);
 
     if (decodedToken.sub) {
-      if (checkIfExistingUser(decodedToken.sub)) {
+      const principalId = decodedToken.sub;
+
+      if (checkIfExistingUser(principalId)) {
         const policy = genPolicy("allow", event.methodArn);
-        const principalId = "djhdajhdjha";
         const context = {
           simpleAuth: true
         };
@@ -53,7 +54,6 @@ export const authorizeUser: Handler = (
         cb(null, response);
       } else {
         const policy = genPolicy("deny", event.methodArn);
-        const principalId = "djhdajhdjha";
         const context = {
           simpleAuth: true
         };
