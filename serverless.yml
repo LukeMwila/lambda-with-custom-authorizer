@@ -1,0 +1,34 @@
+service:
+  name: lambda-with-custom-auth
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: eu-west-1
+
+functions:
+  authorizeUser:
+    handler: handler.authorizeUser
+
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          method: get
+          path: hello
+          authorizer: ${self:custom.authorizer.users}
+          cors: true
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  authorizer:
+    users:
+      name: authorizeUser
+      identitySource: method.request.header.Authorization
+      identityValidationExpression: Bearer (.*)
+      type: token
